@@ -5,4 +5,9 @@ router.get('/', (req, res)=>{
     res.json([])
 })
 
+router.post('/', (req, res)=>{
+    
+})
+
+
 module.exports = router

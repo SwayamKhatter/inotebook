@@ -28,6 +28,7 @@ router.get('/', [
         console.error(error.message);
         res.status(500).send("Some error occured");
     }
+    
 })
 
 module.exports = router
