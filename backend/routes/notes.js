@@ -5,7 +5,7 @@ const Note = require('../models/Notes');
 const { body, validationResult } = require('express-validator');
 
 
-// ROUTE 1: Get all the notes using: GET "/api/auth/getuser". Login required
+// ROUTE 1: Get all the notes using: GET "/api/auth/getallnotes". Login required
 router.get('/getallnotes', fetchuser, async (req, res)=>{
     try{
         const notes = await Note.find({user: req.user.id});
@@ -17,34 +17,35 @@ router.get('/getallnotes', fetchuser, async (req, res)=>{
 })
 
 // ROUTE 2: Add a new note using: POST "/api/auth/addnote". Login required
-router.post('/addnote', fetchuser, [
-    body('title', 'Enter a valid title').isLength({min: 3}),
-    body('discription', 'Discription must be atleast 5 characters').isLength({min: 5}),
-], async(req, res)=>{
-    const errors = validationResult(req);
-    if(!errors.isEmpty()){
-        return res.status(400).json({errors: errors.array()});
-    }
-    try{
-        const {title, discription, tag} = req.body;
+router.post("/addnote", fetchuser, [
+    body('description', 'Description must be at least 3 characters').isLength({ min: 3 }),
+    body('title', 'Enter a valid Tittle').isLength({ min: 3 }),
+], async (req, res) => {
+
+    try {
+        const { title, description, tag } = req.body;
+        const result = validationResult(req);
+        if (!result.isEmpty()) {
+            return res.status(400).json({ errors: result.array() });
+        }
         const note = new Note({
-            title, discription, tag, user: req.user.id
+            title, description, tag, user: req.user.id
         })
         const savedNote = await note.save();
         res.json(savedNote);
-    } catch(error){
+    } catch (error) {
         console.error(error.message);
         res.status(500).send("Internal Server Error");
     }
-})
+});
 
 // ROUTE 3: Update an existing note using: PUT "/api/auth/updatenote". Login required
 router.put('/updatenote/:id', fetchuser, async(req, res)=>{
-    const {title, discription, tag} = req.body;
+    const {title, description, tag} = req.body;
     try{
         const newNote = {};
         if(title) {newNote.title = title};
-        if(discription) {newNote.discription = discription};
+        if(description) {newNote.description = description};
         if(tag) {newNote.tag = tag};
         let note = await Note.findById(req.params.id);
         if(!note){return res.status(404).send("Not Found")};

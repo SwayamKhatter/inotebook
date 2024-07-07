@@ -7,6 +7,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const fetchuser = require('../middleware/fetchUser');
 
+const JWT_secret_code = "swayambsdk"
 
 // ROUTE1: Create a User using: POST "/api/auth/createuser". No login required
 // router.post('/createuser', [
@@ -50,11 +51,12 @@ const fetchuser = require('../middleware/fetchUser');
 // })
 // ROUTE 1: Create a user using: POST "/api/auth/createuser".
 router.post("/create", [
-    body('password', 'Password must be at least 5 characters').isLength({ min: 5 }),
-    body('email', 'Enter a valid email').isEmail(),
     body('name', 'Enter a valid name').isLength({ min: 3 }),
+    body('email', 'Enter a valid email').isEmail(),
+    body('password', 'Password must be at least 5 characters').isLength({ min: 5 }),
 ], async (req, res) => {
     // Validation Using express-validator if any error then return bad request
+
     const result = validationResult(req);
     if (!result.isEmpty()) {
         return res.status(400).json({ errors: result.array() });
@@ -79,7 +81,7 @@ router.post("/create", [
         }
 
 
-        const authToken = jwt.sign(data, 'andro');
+        const authToken = jwt.sign(data, JWT_secret_code);
 
         res.json({ authToken })
     } catch (error) {
@@ -97,6 +99,7 @@ router.post('/login', [
     body('password', 'Password cannot be blank').exists(),
 ], async(req, res)=>{
     const errors = validationResult(req);
+
     if(!errors.isEmpty()){
         return res.status(400).json({errors: errors.array()});
     }
@@ -116,7 +119,9 @@ router.post('/login', [
                 id: user.id
             }
         }
-        const authToken = jwt.sign(data, JWT_SECRET);
+        const authToken = jwt.sign(data, 
+            JWT_secret_code
+        );
         res.json({authToken});
     } catch(error){
         console.error(error.message);
@@ -138,3 +143,59 @@ router.post('/getuser', fetchuser, async(req, res)=>{
 })
 
 module.exports = router
+
+
+// const express = require('express');
+// const router = express.Router();
+// const User = require('../models/User');
+// const { body, validationResult } = require('express-validator');
+// const bcrypt = require('bcryptjs');
+// const jwt = require('jsonwebtoken');
+// const fetchuser = require('../middleware/fetchUser');
+
+// // ROUTE1: Create a user using: POST "/api/auth/createuser".
+// router.post("/create", [
+//     body('name', 'Enter a valid name').isLength({ min: 3 }),
+//     body('email', 'Enter a valid email').isEmail(),
+//     body('password', 'Password must be at least 5 characters').isLength({ min: 5 }),
+// ], async (req, res) => {
+//     // Log the request body to inspect the incoming data
+//     console.log(req.body);
+
+//     const error = validationResult(req);
+//     if (!error.isEmpty()) {
+//         return res.status(400).json({ errors: error.array() });
+//     }
+//     try {
+//         // Check whether the user with this email exists already
+//         let user = await User.findOne({ email: req.body.email });
+//         if (user) {
+//             return res.status(400).json({ error: "Sorry a user with this email already exists" });
+//         }
+
+//         // Create a new user in our database
+//         const saltRounds = await bcrypt.genSalt(10);
+//         const hashedPass = await bcrypt.hash(req.body.password, saltRounds);
+//         user = await User.create({
+//             name: req.body.name,
+//             email: req.body.email,
+//             password: hashedPass
+//         });
+
+//         const data = {
+//             user: {
+//                 id: user.id
+//             }
+//         };
+
+//         const authToken = jwt.sign(data, 'andro');
+
+//         res.json({ authToken });
+//     } catch (error) {
+//         // Returning unformatted errors
+//         console.error(error.message);
+//         res.status(500).send("Something went wrong");
+//     }
+// });
+
+// module.exports = router;

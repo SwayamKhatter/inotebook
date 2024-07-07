@@ -1,4 +1,5 @@
 var jwt = require('jsonwebtoken');
+const JWT_secret_code = "swayambsdk"
 
 const fetchUser = (req, res, next) => {
     // Get the user from the jwt token and add id to req object
@@ -7,7 +8,7 @@ const fetchUser = (req, res, next) => {
         res.status(401).send({ error: "Please authenticate using a valid token" })
     }
     try {
-        const data = jwt.verify(token, process.env.SECRET_KEY);
+        const data = jwt.verify(token,JWT_secret_code );
         req.user = data.user;
         next();
     } catch (error) {
