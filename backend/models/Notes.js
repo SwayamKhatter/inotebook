@@ -1,4 +1,4 @@
-const { default: userEvent } = require('@testing-library/user-event');
+
 const mongoose = require('mongoose');
 const {Schema}= mongoose;
 
