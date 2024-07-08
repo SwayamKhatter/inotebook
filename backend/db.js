@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-const mongoURI = "mongodb://localhost:27017/iNotebook"
+// const mongoURI = "mongodb://localhost:27017/iNotebook"
+const mongoURI = "mongodb+srv://swayamkhatter:rs8nR9MNCpCca9mw@cluster0.mddwnyn.mongodb.net/CloudNotes?retryWrites=true&w=majority&appName=Cluster0"
 const connectToMongo = async () => {
     try {
         await mongoose.connect(mongoURI);
