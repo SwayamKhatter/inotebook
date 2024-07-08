@@ -1,8 +1,8 @@
 import React from 'react'
 
-const Alert = (props) => {
+export const Alert = (props) => {
     return (
-        <div class="alert alert-success" role="alert">
+        <div className="alert alert-primary" role="alert">
             {props.message}
         </div>
     )
